@@ -1,0 +1,42 @@
+debug: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    de.frachtwerk: DEBUG
+
+server:
+  port: 8098
+  error:
+    include-stacktrace: always
+
+spring:
+  h2:
+    console:
+      enabled: true
+      settings:
+        trace: false
+
+# For Development you might need a mail server-stub lig ethereal.email
+#mail:
+#  # See https://ethereal.email
+#  host: smtp.ethereal.email
+#  port: 587
+#  username: <username>
+#  password: <password>
+#
+#  branding:
+#    url: http://localhost:8098/
+#  default-sender:
+#    address: <username>
+
+app:
+  cors:
+    allow: true
+
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: "*"

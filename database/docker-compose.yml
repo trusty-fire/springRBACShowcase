@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:17
+    container_name: showcase-postgres
+    restart: no
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: showcase
+      POSTGRES_USER: crafted
+      POSTGRES_PASSWORD: code
+    volumes:
+      - db:/var/lib/postgresql
+      - showcase_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crafted -d showcase"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: showcase-pgadmin
+    restart: no
+    ports:
+      - "127.0.0.1:3001:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=showcase@crafted-code.org
+      - PGADMIN_DEFAULT_PASSWORD=diEeV3Sm8f89
+    volumes:
+      - pgadmin:/root/.pgadmin
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  db:
+  showcase_data:
+  pgadmin:
+  pgadmin-data:
