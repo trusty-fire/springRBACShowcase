@@ -34,7 +34,6 @@ spring:
     dispatch-trace-request: true
 
 mail:
-  enabled: false
   host: localhost
   port: 587
   username: showcase@crafted-code.org
@@ -121,23 +120,33 @@ pom:
 essencium:
   init:
     roles:
+      - name: OWNER
+        description: Owner
+        rights: []
+        protected: true
+        default-role: false
       - name: ADMIN
         description: Administrator
         rights: []
         protected: true
         default-role: false
-      - name: DEFAULT
-        description: "Default Role"
+      - name: MEMBER
+        description: Member
+        rights: []
+        protected: true
+        default-role: false
+      - name: VIEWER
+        description: Viewer
         rights: []
         protected: true
         default-role: true
     users:
-      - first-name: Admin
+      - first-name: Owner
         last-name: User
         username: showcase@crafted-code.org
-        password: adminAdminAdmin
+        password: ownerOwnerOwner
         roles:
-          - ADMIN
+          - OWNER
           - DEFAULT
   jpa:
     table-prefix: "CC_"

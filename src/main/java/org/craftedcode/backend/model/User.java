@@ -20,8 +20,6 @@ public class User extends AbstractBaseUser<Long> {
 
   @ManyToOne private Organization organization;
 
-  @Enumerated private OrgRole orgRole;
-
   public String getFullName() {
     return getFirstName() + " " + getLastName();
   }

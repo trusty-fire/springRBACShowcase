@@ -58,7 +58,6 @@ public class UserService
             organizationRepository
                 .findById(entity.getOrganizationId())
                 .orElseThrow(ResourceNotFoundException::new))
-        .orgRole(entity.getOrgRole())
         .build();
   }
 
