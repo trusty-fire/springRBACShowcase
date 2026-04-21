@@ -10,4 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-public abstract class AbstractModel extends IdentityIdModel {}
+public abstract class AbstractModel extends IdentityIdModel {
+
+  protected String name;
+}

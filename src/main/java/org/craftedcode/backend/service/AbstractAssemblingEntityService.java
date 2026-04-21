@@ -3,9 +3,9 @@ package org.craftedcode.backend.service;
 import de.frachtwerk.essencium.backend.model.IdentityIdModel;
 import de.frachtwerk.essencium.backend.service.AbstractEntityService;
 import de.frachtwerk.essencium.backend.service.AssemblingService;
-import org.craftedcode.backend.repository.AbstractRepository;
-import org.craftedcode.backend.model.representation.assembler.AbstractAssembler;
 import lombok.Getter;
+import org.craftedcode.backend.model.representation.assembler.AbstractAssembler;
+import org.craftedcode.backend.repository.AbstractRepository;
 
 @Getter
 public abstract class AbstractAssemblingEntityService<M extends IdentityIdModel, IN, OUT>
@@ -13,8 +13,7 @@ public abstract class AbstractAssemblingEntityService<M extends IdentityIdModel,
   protected final AbstractAssembler<M, OUT> assembler;
 
   protected AbstractAssemblingEntityService(
-      final AbstractRepository<M> repository,
-      final AbstractAssembler<M, OUT> assembler) {
+      final AbstractRepository<M> repository, final AbstractAssembler<M, OUT> assembler) {
     super(repository);
     this.assembler = assembler;
   }

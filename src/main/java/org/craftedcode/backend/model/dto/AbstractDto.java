@@ -12,5 +12,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class AbstractDto implements Identifiable<Long> {
-    @Nullable private Long id;
+
+  @Nullable private Long id;
+
+  private String name;
 }
