@@ -55,9 +55,11 @@ public class UserService
         .id(entity.getId())
         .loginDisabled(entity.isLoginDisabled())
         .organization(
-            organizationRepository
-                .findById(entity.getOrganizationId())
-                .orElseThrow(ResourceNotFoundException::new))
+            entity.getOrganizationId() == null
+                ? null
+                : organizationRepository
+                    .findById(entity.getOrganizationId())
+                    .orElseThrow(ResourceNotFoundException::new))
         .build();
   }
 

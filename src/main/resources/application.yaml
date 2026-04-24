@@ -110,23 +110,28 @@ management:
       enabled: false
   endpoint:
     health:
-      enabled: true
       probes:
         enabled: true
 
 pom:
   version: '@project.version@'
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
 essencium:
   init:
     roles:
-      - name: OWNER
-        description: Owner
+      - name: ADMIN
+        description: Administrator
         rights: []
         protected: true
         default-role: false
-      - name: ADMIN
-        description: Administrator
+      - name: MANAGER
+        description: Manager
         rights: []
         protected: true
         default-role: false
@@ -141,12 +146,12 @@ essencium:
         protected: true
         default-role: true
     users:
-      - first-name: Owner
+      - first-name: Admin
         last-name: User
-        username: showcase@crafted-code.org
-        password: ownerOwnerOwner
+        username: showcaseAdmin@crafted-code.org
+        password: adminAdminAdmin
         roles:
-          - OWNER
+          - ADMIN
           - DEFAULT
   jpa:
     table-prefix: "CC_"
