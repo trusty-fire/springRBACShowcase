@@ -48,7 +48,6 @@ mail:
     start-tls: true
 
   branding:
-    logo: https://static.frachtwerk.de/frachtwerk_320px.png
     name: ${spring.application.name}
     url: ${app.url}
     primary-color: "#00b5d6"
@@ -127,22 +126,58 @@ essencium:
     roles:
       - name: ADMIN
         description: Administrator
-        rights: []
+        rights:
+          - ORGANIZATION_READ
+          - ORGANIZATION_UPDATE
+          - ORGANIZATION_DELETE
+          - PROJECT_CREATE
+          - PROJECT_READ
+          - PROJECT_UPDATE
+          - PROJECT_DELETE
+          - TASK_CREATE
+          - TASK_READ
+          - TASK_UPDATE
+          - TASK_DELETE
+          - USER_CREATE
+          - USER_READ
+          - USER_UPDATE
+          - USER_DELETE
         protected: true
         default-role: false
       - name: MANAGER
         description: Manager
-        rights: []
+        rights:
+          - ORGANIZATION_READ
+          - PROJECT_CREATE
+          - PROJECT_READ
+          - PROJECT_UPDATE
+          - PROJECT_DELETE
+          - TASK_CREATE
+          - TASK_READ
+          - TASK_UPDATE
+          - TASK_DELETE
+          - USER_READ
         protected: true
         default-role: false
       - name: MEMBER
         description: Member
-        rights: []
+        rights:
+          - ORGANIZATION_READ
+          - PROJECT_READ
+          - TASK_CREATE
+          - TASK_READ
+          - TASK_UPDATE
+          - TASK_DELETE
+          - USER_READ
         protected: true
         default-role: false
       - name: VIEWER
         description: Viewer
-        rights: []
+        rights:
+          - ORGANIZATION_READ
+          - PROJECT_READ
+          - TASK_READ
+          - USER_READ
         protected: true
         default-role: true
     users:

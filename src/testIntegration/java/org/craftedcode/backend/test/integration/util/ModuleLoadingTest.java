@@ -13,28 +13,28 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(
-        classes = IntegrationTestApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+    classes = IntegrationTestApplication.class,
+    webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class ModuleLoadingTest {
 
-    @Autowired(required = false)
-    private UserController userController;
+  @Autowired(required = false)
+  private UserController userController;
 
-    @Autowired(required = false)
-    private UserAssembler userAssembler;
+  @Autowired(required = false)
+  private UserAssembler userAssembler;
 
-    @Autowired(required = false)
-    private UserRepository userRepository;
+  @Autowired(required = false)
+  private UserRepository userRepository;
 
-    @Autowired(required = false)
-    private UserService userService;
+  @Autowired(required = false)
+  private UserService userService;
 
-    @Test
-    void onlySessionModuleIsLoaded() {
-        assertThat(userController).isNotNull();
-        assertThat(userAssembler).isNotNull();
-        assertThat(userRepository).isNotNull();
-        assertThat(userService).isNotNull();
-    }
+  @Test
+  void onlySessionModuleIsLoaded() {
+    assertThat(userController).isNotNull();
+    assertThat(userAssembler).isNotNull();
+    assertThat(userRepository).isNotNull();
+    assertThat(userService).isNotNull();
+  }
 }

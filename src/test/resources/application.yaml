@@ -6,7 +6,7 @@ logging:
     org.hibernate: WARN
 
 server:
-  port: 8098
+  port: 0
   error:
     include-message: always
     include-stacktrace: never
@@ -37,19 +37,18 @@ spring:
 mail:
   host: localhost
   port: 587
-  username: devnull@frachtwerk.de
+  username: showcase@crafted-code.org
   password: changeme
 
   default-sender:
     name: Essencium Mailer
-    address: devnull@frachtwerk.de
+    address: showcase@crafted-code.org
 
   smtp:
     auth: true
     start-tls: true
 
   branding:
-    logo: https://static.frachtwerk.de/frachtwerk_320px.png
     name: ${spring.application.name}
     url: ${app.url}
     primary-color: "#00b5d6"
@@ -68,7 +67,7 @@ mail:
   contact-mail:
     subject-prefix-key: mail.contact.subject.prefix
     recipients:
-      - devnull@frachtwerk.de
+      - showcase@crafted-code.org
     template: ContactMessage.ftl
     locale: de
 
@@ -79,11 +78,14 @@ mail:
 app:
   domain: localhost
   url: http://${app.domain}:8098
+  default-logout-redirect-url: "http://localhost:3000/login"
+  allowed-logout-redirect-urls:
+    - "http://localhost:3000/*"
   auth:
     jwt:
       access-token-expiration: 86400 # 24 hours
       refresh-token-expiration: 2592000 # 30 days
-      issuer: Frachtwerk GmbH
+      issuer: crafted-code.org
       cleanup-interval: 3600 # 1 hour
       max-session-expiration-time: 86400 # 24 hours
   cors:
@@ -118,10 +120,10 @@ essencium:
     users:
       - first-name: Admin
         last-name: User
-        username: devnull@frachtwerk.de
+        username: showcaseAdmin@crafted-code.org
         password: adminAdminAdmin
         roles:
           - ADMIN
   jpa:
-    table-prefix: "FW_"
+    table-prefix: "CC_"
     camel-case-to-underscore: true
