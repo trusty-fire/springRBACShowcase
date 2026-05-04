@@ -19,13 +19,17 @@ spring:
         trace: false
 
 # For Development you might need a mail server-stub lig ethereal.email
-#mail:
-#  # See https://ethereal.email
+mail:
+# See https://ethereal.email
 #  host: smtp.ethereal.email
 #  port: 587
 #  username: <username>
 #  password: <password>
-#
+
+  debug-receiver:
+    active: true
+    address: /dev/null@example.com
+
 #  branding:
 #    url: http://localhost:8098/
 #  default-sender:

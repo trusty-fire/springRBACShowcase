@@ -50,6 +50,7 @@ mail:
   branding:
     name: ${spring.application.name}
     url: ${app.url}
+    logo: https://raw.githubusercontent.com/trusty-fire/springRBACShowcase/tree/main/src/main/resources/static/logo.svg
     primary-color: "#00b5d6"
     text-color: "#ffffff"
 
