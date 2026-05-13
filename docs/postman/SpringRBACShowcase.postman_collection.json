@@ -1,0 +1,561 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "name": "Spring RBAC Showcase",
+    "description": "Walk-through collection for the Spring RBAC Showcase API. Run **Auth → Login** first to populate the `{{token}}` variable; every other request inherits the collection-level Bearer auth from there. Default base URL targets a local backend on port 8098. Default credentials match the demo data seeded with the `demo` profile.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8098", "type": "string" },
+    { "key": "username", "value": "admin@acme.crafted-code.org", "type": "string" },
+    { "key": "password", "value": "demo123", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "organizationId", "value": "", "type": "string" },
+    { "key": "projectId", "value": "", "type": "string" },
+    { "key": "taskId", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "token"]
+            },
+            "description": "Authenticate and store the returned JWT into the `{{token}}` collection variable. Run this first."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "if (data && data.token) {",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    console.log('Token stored.');",
+                  "} else {",
+                  "    console.warn('No token field in response.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Renew",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/renew",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "renew"]
+            },
+            "description": "Exchange the refresh-token cookie for a fresh access token."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Me",
+      "item": [
+        {
+          "name": "Get my user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.id) pm.collectionVariables.set('userId', data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get my roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/me/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users", "me", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Get my rights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/me/roles/rights",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users", "me", "roles", "rights"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Organizations",
+      "item": [
+        {
+          "name": "List organizations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/organizations?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "organizations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Returns only the caller's organization — multi-tenant filter is enforced server-side."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.content && data.content[0]) {",
+                  "    pm.collectionVariables.set('organizationId', data.content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get organization by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/organizations/{{organizationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "organizations", "{{organizationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create organization",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Initech\",\n  \"slug\": \"initech\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/organizations",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "organizations"]
+            },
+            "description": "Requires ORGANIZATION_CREATE. Will fail if the caller already belongs to an organization."
+          }
+        },
+        {
+          "name": "Update organization",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{organizationId}},\n  \"name\": \"Acme Inc (renamed)\",\n  \"slug\": \"acme\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/organizations/{{organizationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "organizations", "{{organizationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete organization",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/organizations/{{organizationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "organizations", "{{organizationId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "List projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.content && data.content[0]) {",
+                  "    pm.collectionVariables.set('projectId', data.content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List projects (basic)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects/basic",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects", "basic"]
+            },
+            "description": "Returns id+title pairs, handy for dropdowns."
+          }
+        },
+        {
+          "name": "Get project by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects/{{projectId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects", "{{projectId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create project",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Initiative\",\n  \"description\": \"Created via Postman\",\n  \"status\": \"ACTIVE\",\n  \"organization\": {\n    \"id\": {{organizationId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects"]
+            }
+          }
+        },
+        {
+          "name": "Update project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{projectId}},\n  \"name\": \"Renamed Project\",\n  \"description\": \"Updated via Postman\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects/{{projectId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects", "{{projectId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete project",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/projects/{{projectId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "projects", "{{projectId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "List tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.content && data.content[0]) {",
+                  "    pm.collectionVariables.set('taskId', data.content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List tasks (filter by status)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks?status=IN_PROGRESS&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks"],
+              "query": [
+                { "key": "status", "value": "IN_PROGRESS" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Every controller field is available as a query filter via JPA Specifications."
+          }
+        },
+        {
+          "name": "Get task by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create task",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Write Postman collection\",\n  \"description\": \"Document the API for the showcase\",\n  \"status\": \"TODO\",\n  \"priority\": \"MEDIUM\",\n  \"dueDate\": \"2026-12-31\",\n  \"project\": {\n    \"id\": {{projectId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Update task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{taskId}},\n  \"name\": \"Updated task\",\n  \"description\": \"Marked as done\",\n  \"status\": \"DONE\",\n  \"priority\": \"HIGH\",\n  \"dueDate\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "tasks", "{{taskId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"New\",\n  \"lastName\": \"Member\",\n  \"email\": \"new.member@acme.crafted-code.org\",\n  \"password\": \"demo123\",\n  \"enabled\": true,\n  \"roles\": [\"MEMBER\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "users"]
+            },
+            "description": "User is automatically attached to the caller's organization (tenant scope)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Metadata",
+      "item": [
+        {
+          "name": "OpenAPI spec",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["v3", "api-docs"]
+            }
+          }
+        },
+        {
+          "name": "Health",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
