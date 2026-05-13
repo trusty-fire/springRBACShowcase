@@ -13,7 +13,7 @@ server:
 
 spring:
   profiles:
-    active: development, h2
+    active: development, h2, demo
   cache:
     type: simple
   application:
