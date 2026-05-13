@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM amazoncorretto:21
 
 LABEL maintainer="https://crafted-code.org"
 
