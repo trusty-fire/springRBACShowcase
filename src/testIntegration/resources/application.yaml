@@ -115,6 +115,7 @@ essencium:
       - name: ADMIN
         description: Administrator
         rights:
+          - ORGANIZATION_CREATE
           - ORGANIZATION_READ
           - ORGANIZATION_UPDATE
           - ORGANIZATION_DELETE
