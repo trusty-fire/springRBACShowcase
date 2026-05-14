@@ -39,6 +39,9 @@
     <properties>
         <java.version>21</java.version>
         <essencium.version>3.3.2</essencium.version>
+        <!-- essencium-backend 3.3.2 uses org.apache.commons.lang3.Strings, added in 3.18.0;
+             Spring Boot 3.5.11 otherwise manages this down to 3.17.0 -->
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <postgresql.version>42.7.10</postgresql.version>
         <h2.version>2.4.240</h2.version>
         <cosium.version>5.4</cosium.version>
