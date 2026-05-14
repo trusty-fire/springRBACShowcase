@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.*;
-import java.util.stream.Collectors;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.craftedcode.backend.service.AbstractAssemblingEntityService;
@@ -47,9 +46,7 @@ public abstract class AbstractRestController<
   }
 
   public List<O> toRepresentation(List<M> list) {
-    return list.stream()
-        .map(abstractAssemblingEntityService::toOutput)
-        .collect(Collectors.toList());
+    return abstractAssemblingEntityService.toOutput(list);
   }
 
   @Override

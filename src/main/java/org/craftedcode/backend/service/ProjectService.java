@@ -2,8 +2,11 @@ package org.craftedcode.backend.service;
 
 import de.frachtwerk.essencium.backend.model.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import org.craftedcode.backend.model.Organization;
 import org.craftedcode.backend.model.Project;
 import org.craftedcode.backend.model.dto.ProjectDto;
@@ -11,8 +14,10 @@ import org.craftedcode.backend.model.representation.ProjectRepresentation;
 import org.craftedcode.backend.model.representation.assembler.ProjectAssembler;
 import org.craftedcode.backend.repository.OrganizationRepository;
 import org.craftedcode.backend.repository.ProjectRepository;
+import org.craftedcode.backend.repository.TaskRepository;
 import org.craftedcode.backend.repository.specification.TenantSpecifications;
 import org.craftedcode.backend.security.TenantContext;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +26,49 @@ public class ProjectService
     extends AbstractAssemblingEntityService<Project, ProjectDto, ProjectRepresentation> {
 
   private final OrganizationRepository organizationRepository;
+  private final TaskRepository taskRepository;
   private final TenantContext tenantContext;
+  private final ProjectAssembler projectAssembler;
 
   protected ProjectService(
       ProjectRepository repository,
       ProjectAssembler assembler,
       OrganizationRepository organizationRepository,
+      TaskRepository taskRepository,
       TenantContext tenantContext) {
     super(repository, assembler);
     this.organizationRepository = organizationRepository;
+    this.taskRepository = taskRepository;
     this.tenantContext = tenantContext;
+    this.projectAssembler = assembler;
+  }
+
+  @Override
+  public ProjectRepresentation toOutput(Project entity) {
+    return enricher(List.of(entity.getId())).apply(entity);
+  }
+
+  @Override
+  public Page<ProjectRepresentation> toOutput(Page<Project> page) {
+    if (page == null) {
+      return null;
+    }
+    return page.map(enricher(page.getContent().stream().map(Project::getId).toList()));
+  }
+
+  @Override
+  public List<ProjectRepresentation> toOutput(List<Project> entities) {
+    Function<Project, ProjectRepresentation> enricher =
+        enricher(entities.stream().map(Project::getId).toList());
+    return entities.stream().map(enricher).toList();
+  }
+
+  /** Batch-loads task ids for the given projects, avoiding N+1 queries. */
+  private Function<Project, ProjectRepresentation> enricher(List<Long> projectIds) {
+    Map<Long, List<Long>> taskIds = groupByParent(taskRepository.findIdsByProjectIds(projectIds));
+    return project ->
+        projectAssembler.toRepresentation(
+            project, taskIds.getOrDefault(project.getId(), List.of()));
   }
 
   @Override
