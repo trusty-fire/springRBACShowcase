@@ -12,14 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UserAssemblerTest {
 
-  @InjectMocks UserAssembler SUT;
+  @InjectMocks UserAssembler target;
 
   @Test
   void toModel() {
     User user =
         User.builder().id(1L).firstName("test").lastName("user").email("test@example.com").build();
 
-    var model = SUT.toModel(user);
+    var model = target.toModel(user);
 
     assertThat(model).isNotNull();
     assertThat(model).isInstanceOf(User.class);
